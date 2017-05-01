@@ -10,7 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170428142053) do
+ActiveRecord::Schema.define(version: 20170428181425) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "appointments", force: :cascade do |t|
+    t.integer  "physician_id"
+    t.integer  "patient_id"
+    t.date     "appointment_date"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["patient_id"], name: "index_appointments_on_patient_id", using: :btree
+    t.index ["physician_id"], name: "index_appointments_on_physician_id", using: :btree
+  end
+
+  create_table "banks", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "banks_people", id: false, force: :cascade do |t|
+    t.integer "bank_id",   null: false
+    t.integer "person_id", null: false
+    t.index ["bank_id"], name: "index_banks_people_on_bank_id", using: :btree
+    t.index ["person_id"], name: "index_banks_people_on_person_id", using: :btree
+  end
 
   create_table "birth_registries", force: :cascade do |t|
     t.string   "place"
@@ -18,7 +44,27 @@ ActiveRecord::Schema.define(version: 20170428142053) do
     t.integer  "person_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
-    t.index ["person_id"], name: "index_birth_registries_on_person_id"
+    t.index ["person_id"], name: "index_birth_registries_on_person_id", using: :btree
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "paragraphs", force: :cascade do |t|
+    t.text     "text"
+    t.integer  "section_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_paragraphs_on_section_id", using: :btree
+  end
+
+  create_table "patients", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "people", force: :cascade do |t|
@@ -28,4 +74,34 @@ ActiveRecord::Schema.define(version: 20170428142053) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "pets", force: :cascade do |t|
+    t.string   "name"
+    t.string   "breed"
+    t.integer  "kind"
+    t.integer  "person_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_pets_on_person_id", using: :btree
+  end
+
+  create_table "physicians", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "document_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["document_id"], name: "index_sections_on_document_id", using: :btree
+  end
+
+  add_foreign_key "appointments", "patients"
+  add_foreign_key "appointments", "physicians"
+  add_foreign_key "birth_registries", "people"
+  add_foreign_key "paragraphs", "sections"
+  add_foreign_key "pets", "people"
+  add_foreign_key "sections", "documents"
 end
